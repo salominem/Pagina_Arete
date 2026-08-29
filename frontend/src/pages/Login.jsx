@@ -72,7 +72,7 @@ const Login = () => {
         <div className="w-full max-w-md bg-[#1c1c1c] border border-white/10 p-8 sm:p-10 shadow-2xl space-y-8 rounded-2xl">
           <div className="text-center space-y-2">
             <h1 className="text-2xl sm:text-3xl font-black tracking-widest uppercase text-white">
-              Acceso App
+              Iniciar Sesión
             </h1>
             <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">
               Ingresa a tu panel de entrenamiento
@@ -90,7 +90,7 @@ const Login = () => {
               <label className="block text-[10px] uppercase tracking-widest text-slate-400 font-black">Email</label>
               <input 
                 type="email" 
-                placeholder="ej: sebastian@test.com" 
+                placeholder="Email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

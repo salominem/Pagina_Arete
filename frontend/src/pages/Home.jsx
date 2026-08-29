@@ -122,11 +122,6 @@ const Home = () => {
             <p className="text-slate-400 text-sm leading-relaxed">
               Mi misión es acompañarte en cada etapa de tu evolución, optimizando tus rutinas para garantizar un progreso real, constante y enfocado en tu máximo rendimiento.
             </p>
-            <div className="flex gap-4 pt-4 text-slate-400">
-              <span className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#ff5733] hover:text-white transition cursor-pointer">f</span>
-              <span className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#ff5733] hover:text-white transition cursor-pointer">t</span>
-              <span className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#ff5733] hover:text-white transition cursor-pointer">ig</span>
-            </div>
           </FadeInSection>
 
           <FadeInSection direction="right" className="relative overflow-hidden shadow-2xl border border-white/10">
@@ -203,13 +198,8 @@ const Home = () => {
                 Escribe o llámame si tienes alguna pregunta sobre las rutinas o los planes de entrenamiento.
               </p>
               <div className="space-y-2 text-sm font-bold pt-4">
-                <p>contacto@nicolasrosales.com</p>
-                <p>914-123-456</p>
-              </div>
-              <div className="flex gap-4 pt-4">
-                <span className="w-9 h-9 rounded-full bg-[#141414] text-white flex items-center justify-center text-xs">f</span>
-                <span className="w-9 h-9 rounded-full bg-[#141414] text-white flex items-center justify-center text-xs">t</span>
-                <span className="w-9 h-9 rounded-full bg-[#141414] text-white flex items-center justify-center text-xs">ig</span>
+                <p>rosalesnicolas60@gmail.com</p>
+                <p>381 320-1884</p>
               </div>
             </div>
 
@@ -261,7 +251,7 @@ const Home = () => {
 
       {/* Botón Flotante de WhatsApp */}
       <a
-        href="https://wa.me/5493815551234?text=Hola%20Nicolas,%20quiero%20consultar%20sobre%20tus%20entrenamientos" 
+        href="https://wa.me/5493813201884?text=Hola%20Nicolas,%20quiero%20consultar%20sobre%20tus%20entrenamientos" 
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#20ba5a] text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 cursor-pointer"
