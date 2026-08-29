@@ -7,6 +7,7 @@ import { API_URL, authHeaders } from '../config/api';
 const AlumnoDashboard = () => {
   const navigate = useNavigate();
   const [alumno, setAlumno] = useState(null);
+  const [cargando, setCargando] = useState(true);
   const [toastMensaje, setToastMensaje] = useState(null);
 
   useEffect(() => {
@@ -32,6 +33,8 @@ const AlumnoDashboard = () => {
         }
       } catch (e) {
         console.error("Error al conectar con el servidor para cargar el panel del alumno:", e);
+      } finally {
+        setCargando(false);
       }
     };
 
@@ -73,6 +76,14 @@ const AlumnoDashboard = () => {
     setToastMensaje(`¡Carga registrada con éxito para ${ejercicio.nombre}!`);
     setTimeout(() => setToastMensaje(null), 3500);
   };
+
+  if (cargando) {
+    return (
+      <div className="min-h-screen bg-[#141414] flex flex-col items-center justify-center font-sans text-slate-400 p-6 space-y-4 selection:bg-[#ff5733] selection:text-white">
+        <p className="text-center text-xs uppercase tracking-widest">Cargando tu panel de entrenamiento...</p>
+      </div>
+    );
+  }
 
   if (!alumno) {
     return (
