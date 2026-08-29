@@ -1,0 +1,14 @@
+# Dependencias
+node_modules
+*/node_modules
+
+# Variables de entorno
+.env
+*/.env
+.env.local
+
+# Otros
+*.log
+.DS_Store
+dist
+dist-ssr
