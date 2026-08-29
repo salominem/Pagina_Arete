@@ -396,18 +396,18 @@ const AdminDashboard = () => {
                       >
                         Observaciones
                       </button>
-                                      <button
-                  onClick={() => handleToggleEstado(alumno)}
-                  className={`text-xs px-3 py-2 rounded-lg font-semibold cursor-pointer border ${alumno.estado === 'inactivo' ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200'}`}
-                >
-                  {alumno.estado === 'inactivo' ? 'Activar' : 'Desactivar'}
-                </button>
-                <button
-                  onClick={() => handleEliminarAlumno(alumno)}
-                  className="bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-600 text-xs px-3 py-2 rounded-lg font-semibold cursor-pointer border border-slate-200"
-                >
-                  Eliminar
-                </button>
+                      <button
+                        onClick={() => handleToggleEstado(alumno)}
+                        className={`text-xs px-3 py-2 rounded-lg font-semibold cursor-pointer border ${alumno.estado === 'inactivo' ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200'}`}
+                      >
+                        {alumno.estado === 'inactivo' ? 'Activar' : 'Desactivar'}
+                      </button>
+                      <button
+                        onClick={() => handleEliminarAlumno(alumno)}
+                        className="bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-600 text-xs px-3 py-2 rounded-lg font-semibold cursor-pointer border border-slate-200"
+                      >
+                        Eliminar
+                      </button>
                     </div>
                   </div>
                 ))
