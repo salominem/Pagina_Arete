@@ -23,7 +23,6 @@ const ModalEditarAlumno = ({ isOpen, onClose, alumno, onActualizarAlumno, planti
   const [loading, setLoading] = useState(false);
   const [errorBackend, setErrorBackend] = useState('');
 
-  // Convierte formatos manuales o de BD al formato YYYY-MM-DD que exige el input date
   const convertirAInputDate = (fechaStr) => {
     if (!fechaStr) return '';
     if (/^\d{4}-\d{2}-\d{2}$/.test(fechaStr)) return fechaStr;
@@ -70,6 +69,17 @@ const ModalEditarAlumno = ({ isOpen, onClose, alumno, onActualizarAlumno, planti
 
     const alumnoId = alumno._id || alumno.id;
 
+    // Si el objetivo cambió y coincide con una plantilla real, reasignamos
+    // también la rutina (los días y ejercicios), no solo el texto del objetivo.
+    const payload = { ...formData };
+    const objetivoCambio = formData.objetivo !== (alumno.objetivo || '');
+    if (objetivoCambio) {
+      const plantillaCoincidente = plantillas.find(p => p.nombre === formData.objetivo);
+      if (plantillaCoincidente) {
+        payload.rutinaActual = JSON.parse(JSON.stringify(plantillaCoincidente));
+      }
+    }
+
     try {
       const response = await fetch(`${API_URL}/api/alumnos/${alumnoId}`, {
         method: 'PUT',
@@ -77,7 +87,7 @@ const ModalEditarAlumno = ({ isOpen, onClose, alumno, onActualizarAlumno, planti
           'Content-Type': 'application/json',
           ...authHeaders(),
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
