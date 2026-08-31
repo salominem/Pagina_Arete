@@ -9,6 +9,7 @@ const AlumnoDashboard = () => {
   const [alumno, setAlumno] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [toastMensaje, setToastMensaje] = useState(null);
+  const [mesSeleccionado, setMesSeleccionado] = useState(null);
 
   useEffect(() => {
     const cargarDatosAlumnoServidor = async () => {
@@ -184,45 +185,101 @@ const AlumnoDashboard = () => {
 
         {/* GRÁFICO DE EVOLUCIÓN */}
         <div className="bg-[#1c1c1c] p-6 sm:p-8 rounded-2xl border border-white/10 shadow-xl space-y-6">
-          <div>
-            <h3 className="text-lg font-black text-white uppercase tracking-wider">Gráfico de Evolución de Cargas</h3>
-            <p className="text-xs text-slate-400 uppercase tracking-widest mt-0.5">Visualización de tendencia basada en registros históricos.</p>
-          </div>
+          {(() => {
+            const todosLosEjercicios = alumno.rutinaActual?.dias?.flatMap(d => d.ejercicios || []) || [];
 
-          <div className="space-y-6">
-            {alumno.rutinaActual?.dias?.flatMap(d => d.ejercicios || []).map((ej, idx) => (
-              <div key={idx} className="bg-[#141414] border border-white/10 p-5 rounded-xl space-y-4">
-                <div className="flex justify-between items-center text-xs font-black text-white uppercase tracking-wider">
-                  <span>{ej.nombre}</span>
-                  <span className="text-[#ff5733] text-[10px] tracking-widest">
-                    {ej.historial && ej.historial.length > 0 ? `${ej.historial.length} registros` : 'Sin registros'}
-                  </span>
+            // Sacamos año-mes de una fecha con formato dd/mm/yyyy
+            const obtenerAnioMes = (fechaStr) => {
+              const partes = (fechaStr || '').split('/');
+              if (partes.length !== 3) return null;
+              return `${partes[2]}-${partes[1].padStart(2, '0')}`;
+            };
+
+            const nombresMeses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+            const etiquetaMes = (anioMes) => {
+              const [anio, mes] = anioMes.split('-');
+              return `${nombresMeses[parseInt(mes, 10) - 1]} ${anio}`;
+            };
+
+            // Juntamos todos los meses que tengan al menos un registro, sin repetir
+            const mesesDisponibles = [...new Set(
+              todosLosEjercicios.flatMap(ej => (ej.historial || []).map(h => obtenerAnioMes(h.fecha)))
+                .filter(Boolean)
+            )].sort().reverse();
+
+            const mesActivo = mesSeleccionado || mesesDisponibles[0] || null;
+
+            return (
+              <>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                  <div>
+                    <h3 className="text-lg font-black text-white uppercase tracking-wider">Gráfico de Evolución de Cargas</h3>
+                    <p className="text-xs text-slate-400 uppercase tracking-widest mt-0.5">Visualización de tendencia basada en registros históricos.</p>
+                  </div>
+
+                  {mesesDisponibles.length > 0 && (
+                    <select
+                      value={mesActivo || ''}
+                      onChange={(e) => setMesSeleccionado(e.target.value)}
+                      className="bg-[#141414] border border-white/20 rounded-xl px-4 py-2 text-xs text-white uppercase tracking-wider outline-none focus:border-[#ff5733]"
+                    >
+                      {mesesDisponibles.map(anioMes => (
+                        <option key={anioMes} value={anioMes}>{etiquetaMes(anioMes)}</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
 
-                <div className="space-y-3 pt-1">
-                  {ej.historial?.map((hist, hIdx) => {
-                    const numCarga = parseFloat(hist.carga) || 10;
-                    const porcentajeBarra = Math.min(Math.max((numCarga / 100) * 100, 15), 100);
+                <div className="space-y-6">
+                  {todosLosEjercicios.length === 0 && (
+                    <div className="bg-[#141414] border border-white/10 rounded-xl p-6 text-center text-slate-400 text-xs uppercase tracking-widest">
+                      No hay ejercicios en la rutina actual.
+                    </div>
+                  )}
+
+                  {todosLosEjercicios.map((ej, idx) => {
+                    const historialDelMes = mesActivo
+                      ? (ej.historial || []).filter(h => obtenerAnioMes(h.fecha) === mesActivo)
+                      : [];
 
                     return (
-                      <div key={hIdx} className="space-y-1.5">
-                        <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                          <span>Fecha: {hist.fecha}</span>
-                          <span className="text-white">{hist.carga}</span>
+                      <div key={idx} className="bg-[#141414] border border-white/10 p-5 rounded-xl space-y-4">
+                        <div className="flex justify-between items-center text-xs font-black text-white uppercase tracking-wider">
+                          <span>{ej.nombre}</span>
+                          <span className="text-[#ff5733] text-[10px] tracking-widest">
+                            {historialDelMes.length > 0 ? `${historialDelMes.length} registros` : 'Sin registros este mes'}
+                          </span>
                         </div>
-                        <div className="w-full bg-white/10 h-2.5 rounded-full overflow-hidden">
-                          <div 
-                            className="bg-[#ff5733] h-full rounded-full transition-all duration-500" 
-                            style={{ width: `${porcentajeBarra}%` }}
-                          ></div>
+
+                        <div className="space-y-3 pt-1">
+                          {historialDelMes.map((hist, hIdx) => {
+                            const numCarga = parseFloat(hist.carga) || 10;
+                            const porcentajeBarra = Math.min(Math.max((numCarga / 100) * 100, 15), 100);
+
+                            return (
+                              <div key={hIdx} className="space-y-1.5">
+                                <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                  <span>Fecha: {hist.fecha}</span>
+                                  <span className="text-white">{hist.carga}</span>
+                                </div>
+                                <div className="w-full bg-white/10 h-2.5 rounded-full overflow-hidden">
+                                  <div
+                                    className="bg-[#ff5733] h-full rounded-full transition-all duration-500"
+                                    style={{ width: `${porcentajeBarra}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     );
                   })}
                 </div>
-              </div>
-            ))}
-          </div>
+              </>
+            );
+          })()}
         </div>
 
         {/* CHAT ENTRENADOR */}
