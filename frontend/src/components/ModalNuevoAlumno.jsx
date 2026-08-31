@@ -39,17 +39,21 @@ const ModalNuevoAlumno = ({ isOpen, onClose, onAgregarAlumno, plantillas = [] })
     
     const plantillaSeleccionada = plantillas.find(p => p.nombre === formData.objetivo);
 
+    const rutinaAsignada = plantillaSeleccionada
+      ? { ...plantillaSeleccionada, plantillaId: plantillaSeleccionada._id || plantillaSeleccionada.id }
+      : {
+          nombre: formData.objetivo,
+          dias: [
+            { dia: "Día 1: General", ejercicios: [{ nombre: "Aperturas o Sentadillas", series: "3 x 10", carga: "A definir", descanso: "60s" }] }
+          ]
+        };
+
     const nuevoAlumno = {
       ...formData,
       role: 'alumno',
       estado: 'activo',
       fechaCreacion: new Date().toLocaleDateString(),
-      rutinaActual: plantillaSeleccionada || {
-        nombre: formData.objetivo,
-        dias: [
-          { dia: "Día 1: General", ejercicios: [{ nombre: "Aperturas o Sentadillas", series: "3 x 10", carga: "A definir", descanso: "60s" }] }
-        ]
-      }
+      rutinaActual: rutinaAsignada
     };
 
     try {

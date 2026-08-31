@@ -21,6 +21,7 @@ const DiaSchema = new mongoose.Schema({
 const RutinaSchema = new mongoose.Schema({
   nombre: String,
   descripcion: String,
+  plantillaId: { type: mongoose.Schema.Types.ObjectId, ref: 'Plantilla' },
   dias: [DiaSchema]
 }, { _id: false });
 

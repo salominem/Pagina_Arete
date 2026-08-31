@@ -74,9 +74,11 @@ const ModalEditarAlumno = ({ isOpen, onClose, alumno, onActualizarAlumno, planti
     const payload = { ...formData };
     const objetivoCambio = formData.objetivo !== (alumno.objetivo || '');
     if (objetivoCambio) {
-      const plantillaCoincidente = plantillas.find(p => p.nombre === formData.objetivo);
+           const plantillaCoincidente = plantillas.find(p => p.nombre === formData.objetivo);
       if (plantillaCoincidente) {
-        payload.rutinaActual = JSON.parse(JSON.stringify(plantillaCoincidente));
+        const copia = JSON.parse(JSON.stringify(plantillaCoincidente));
+        copia.plantillaId = plantillaCoincidente._id || plantillaCoincidente.id;
+        payload.rutinaActual = copia;
       }
     }
 

@@ -242,11 +242,13 @@ const AdminDashboard = () => {
     await actualizarPlantillaEnBD(plantillaActualizada);
   };
 
-  const asignarPlantillaAAlumno = async (plantilla) => {
+    const asignarPlantillaAAlumno = async (plantilla) => {
     if (!alumnoSeleccionado) return;
+    const copiaPlantilla = JSON.parse(JSON.stringify(plantilla)); // Copia profunda para evitar referencias cruzadas
+    copiaPlantilla.plantillaId = getId(plantilla);
     const alumnoModificado = {
       ...alumnoSeleccionado,
-      rutinaActual: JSON.parse(JSON.stringify(plantilla)) // Copia profunda para evitar referencias cruzadas
+      rutinaActual: copiaPlantilla
     };
     handleActualizarAlumno(alumnoModificado);
     await actualizarAlumnoEnBD(alumnoModificado);

@@ -1,5 +1,6 @@
 const express = require('express');
 const Plantilla = require('../models/Plantilla');
+const Alumno = require('../models/Alumno');
 const { verificarToken, soloAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -26,7 +27,7 @@ router.post('/crear', verificarToken, soloAdmin, async (req, res) => {
   }
 });
 
-// PUT /api/plantillas/:id -> editar una plantilla
+// PUT /api/plantillas/:id -> editar una plantilla, y sincronizar a los alumnos que la tienen asignada
 router.put('/:id', verificarToken, soloAdmin, async (req, res) => {
   try {
     const datos = { ...req.body };
@@ -41,6 +42,38 @@ router.put('/:id', verificarToken, soloAdmin, async (req, res) => {
 
     if (!actualizada) {
       return res.status(404).json({ message: 'Plantilla no encontrada' });
+    }
+
+    // Buscar a todos los alumnos que tienen ESTA plantilla asignada
+    const alumnosAfectados = await Alumno.find({ 'rutinaActual.plantillaId': req.params.id });
+
+    for (const alumno of alumnosAfectados) {
+      const diasViejos = alumno.rutinaActual?.dias || [];
+
+      // Reconstruimos los días/ejercicios según la plantilla actualizada,
+      // pero conservando el historial de cargas de los ejercicios que ya existían.
+      const diasNuevos = (actualizada.dias || []).map(diaPlantilla => {
+        const diaViejo = diasViejos.find(d => d.dia === diaPlantilla.dia);
+        const ejerciciosNuevos = (diaPlantilla.ejercicios || []).map(ejPlantilla => {
+          const ejViejo = diaViejo?.ejercicios?.find(e => e.nombre === ejPlantilla.nombre);
+          return {
+            nombre: ejPlantilla.nombre,
+            series: ejPlantilla.series,
+            carga: ejPlantilla.carga,
+            descanso: ejPlantilla.descanso,
+            historial: ejViejo?.historial || []
+          };
+        });
+        return { dia: diaPlantilla.dia, ejercicios: ejerciciosNuevos };
+      });
+
+      alumno.rutinaActual = {
+        nombre: actualizada.nombre,
+        descripcion: actualizada.descripcion,
+        plantillaId: actualizada._id,
+        dias: diasNuevos
+      };
+      await alumno.save();
     }
 
     res.json(actualizada);
