@@ -231,51 +231,80 @@ const AlumnoDashboard = () => {
                   )}
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {todosLosEjercicios.length === 0 && (
                     <div className="bg-[#141414] border border-white/10 rounded-xl p-6 text-center text-slate-400 text-xs uppercase tracking-widest">
                       No hay ejercicios en la rutina actual.
                     </div>
                   )}
 
-                  {todosLosEjercicios.map((ej, idx) => {
-                    const historialDelMes = mesActivo
-                      ? (ej.historial || []).filter(h => obtenerAnioMes(h.fecha) === mesActivo)
-                      : [];
+                  {(() => {
+                    const ejerciciosConDatos = [];
+                    const ejerciciosSinDatos = [];
+
+                    todosLosEjercicios.forEach((ej, idx) => {
+                      const historialDelMes = mesActivo
+                        ? (ej.historial || []).filter(h => obtenerAnioMes(h.fecha) === mesActivo)
+                        : [];
+                      if (historialDelMes.length > 0) {
+                        ejerciciosConDatos.push({ ej, idx, historialDelMes });
+                      } else {
+                        ejerciciosSinDatos.push({ ej, idx });
+                      }
+                    });
 
                     return (
-                      <div key={idx} className="bg-[#141414] border border-white/10 p-5 rounded-xl space-y-4">
-                        <div className="flex justify-between items-center text-xs font-black text-white uppercase tracking-wider">
-                          <span>{ej.nombre}</span>
-                          <span className="text-[#ff5733] text-[10px] tracking-widest">
-                            {historialDelMes.length > 0 ? `${historialDelMes.length} registros` : 'Sin registros este mes'}
-                          </span>
-                        </div>
+                      <>
+                        {ejerciciosConDatos.map(({ ej, idx, historialDelMes }) => (
+                          <div key={idx} className="bg-[#141414] border border-white/10 p-5 rounded-xl space-y-4">
+                            <div className="flex justify-between items-center text-xs font-black text-white uppercase tracking-wider">
+                              <span>{ej.nombre}</span>
+                              <span className="text-[#ff5733] text-[10px] tracking-widest">
+                                {historialDelMes.length} registros
+                              </span>
+                            </div>
 
-                        <div className="space-y-3 pt-1">
-                          {historialDelMes.map((hist, hIdx) => {
-                            const numCarga = parseFloat(hist.carga) || 10;
-                            const porcentajeBarra = Math.min(Math.max((numCarga / 100) * 100, 15), 100);
+                            <div className="space-y-3 pt-1">
+                              {historialDelMes.map((hist, hIdx) => {
+                                const numCarga = parseFloat(hist.carga) || 10;
+                                const porcentajeBarra = Math.min(Math.max((numCarga / 100) * 100, 15), 100);
 
-                            return (
-                              <div key={hIdx} className="space-y-1.5">
-                                <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                                  <span>Fecha: {hist.fecha}</span>
-                                  <span className="text-white">{hist.carga}</span>
+                                return (
+                                  <div key={hIdx} className="space-y-1.5">
+                                    <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                      <span>Fecha: {hist.fecha}</span>
+                                      <span className="text-white">{hist.carga}</span>
+                                    </div>
+                                    <div className="w-full bg-white/10 h-2.5 rounded-full overflow-hidden">
+                                      <div
+                                        className="bg-[#ff5733] h-full rounded-full transition-all duration-500"
+                                        style={{ width: `${porcentajeBarra}%` }}
+                                      ></div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
+
+                        {ejerciciosSinDatos.length > 0 && (
+                          <details className="bg-[#141414] border border-white/10 rounded-xl px-5 py-3">
+                            <summary className="text-[10px] font-black text-slate-400 uppercase tracking-widest cursor-pointer select-none">
+                              {ejerciciosSinDatos.length} ejercicio{ejerciciosSinDatos.length > 1 ? 's' : ''} sin registros este mes
+                            </summary>
+                            <div className="pt-3 space-y-2">
+                              {ejerciciosSinDatos.map(({ ej, idx }) => (
+                                <div key={idx} className="text-[11px] text-slate-500 uppercase tracking-wide">
+                                  {ej.nombre}
                                 </div>
-                                <div className="w-full bg-white/10 h-2.5 rounded-full overflow-hidden">
-                                  <div
-                                    className="bg-[#ff5733] h-full rounded-full transition-all duration-500"
-                                    style={{ width: `${porcentajeBarra}%` }}
-                                  ></div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
+                              ))}
+                            </div>
+                          </details>
+                        )}
+                      </>
                     );
-                  })}
+                  })()}
                 </div>
               </>
             );
